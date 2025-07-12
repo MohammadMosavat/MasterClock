@@ -8,4 +8,23 @@
 html,
 body {
   box-sizing: border-box;
+  background-color: #d2f2d4;
+}
+
+:root {
+  /* Primary Palette */
+  --primary-main: #009c1a;
+  --primary-light: #22b600;
+
+  /* Secondary Palette */
+  --secondary-main: #26cc00;
+  --secondary-light: #e2ffdc;
+
+  /* Background Colors */
+  --background-default: #d2f2d4;
+  --background-paper: #e2ffdc;
+
+  /* Text Colors */
+  --text-primary: #009c1a;
+  --text-secondary: #26cc00;
 }
