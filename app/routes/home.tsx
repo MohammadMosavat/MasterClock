@@ -1,5 +1,6 @@
 import type { Route } from "./+types/home";
-import ActionTimer from "~/components/ClockifyData";
+import ClockifyData from "~/components/ClockifyData";
+import ClockifyConnect from "~/components/ClockifyConnect";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -11,7 +12,8 @@ export function meta({}: Route.MetaArgs) {
 export default function Home() {
   return (
     <main className="w-full max-w-7xl mx-auto px-4 py-8">
-      <ActionTimer />
+      <ClockifyConnect />
+      <ClockifyData />
     </main>
   );
 }
