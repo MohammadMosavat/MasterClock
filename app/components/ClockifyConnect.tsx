@@ -45,7 +45,7 @@ const ClockifyConnect = () => {
 
   return isConnected ? (
     <Button variant="outlined" color="success">
-      Connected to Clockify
+      {isConnected ? "Connected" : "connect"} to Clockify
     </Button>
   ) : (
     <AlertDialog valueButton="Connect to Clockify" optionsButton={null}>
