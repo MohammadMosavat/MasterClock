@@ -23,7 +23,7 @@ It allows users to enter their Clockify API key, view their workspaces, see time
 ### Clone the repository
 
 ```bash
-git clone https://github.com/your-username/clockify-dashboard.git
+git clone https://github.com/MohammadMosavat/clockify-dashboard.git
 cd clockify-dashboard
 ```
 
