@@ -73,6 +73,7 @@ const Home = () => {
             maxWidth: 800,
             mx: "auto",
             mb: 6,
+            color: "#7aa2f7"
           }}
         >
           MasterClock is a modern platform designed to make your workflow
