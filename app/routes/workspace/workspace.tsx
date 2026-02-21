@@ -42,7 +42,12 @@ export default function WorkspacePage() {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <Typography variant="h4" fontWeight={600} gutterBottom>
+      <Typography
+        variant="h4"
+        color="text.primary"
+        fontWeight={600}
+        gutterBottom
+      >
         Clockify Workspaces
       </Typography>
 

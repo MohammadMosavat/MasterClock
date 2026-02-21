@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import {
@@ -16,6 +18,7 @@ import {
   IconButton,
   InputAdornment,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import {
   Visibility,
   VisibilityOff,
@@ -26,6 +29,8 @@ import {
 } from "@mui/icons-material";
 
 const ClockifyApiSetup: React.FC = () => {
+  const theme = useTheme();
+
   const [apiKey, setApiKey] = useState<string>("");
   const [savedKey, setSavedKey] = useState<string>("");
   const [showKey, setShowKey] = useState<boolean>(false);
@@ -35,17 +40,13 @@ const ClockifyApiSetup: React.FC = () => {
   } | null>(null);
 
   useEffect(() => {
-    // Get API key from cookies using js-cookie
     const saved = Cookies.get("clockify_api_key");
-    if (saved) {
-      setSavedKey(saved);
-    }
+    if (saved) setSavedKey(saved);
   }, []);
 
   const handleSave = (): void => {
     if (!apiKey.trim()) {
       setMessage({ text: "Please enter an API key", type: "error" });
-      document.location.reload();
       return;
     }
 
@@ -57,7 +58,6 @@ const ClockifyApiSetup: React.FC = () => {
       return;
     }
 
-    // Save to cookies using js-cookie
     Cookies.set("clockify_api_key", apiKey.trim(), {
       expires: 365,
       sameSite: "strict",
@@ -72,7 +72,6 @@ const ClockifyApiSetup: React.FC = () => {
   };
 
   const handleClear = (): void => {
-    // Remove from cookies using js-cookie
     Cookies.remove("clockify_api_key", { path: "/" });
     setSavedKey("");
     setApiKey("");
@@ -97,61 +96,43 @@ const ClockifyApiSetup: React.FC = () => {
             href="https://app.clockify.me/login"
             target="_blank"
             rel="noopener noreferrer"
-            sx={{ color: "#231942", fontWeight: 600 }}
+            sx={{
+              color: theme.palette.primary.main,
+              fontWeight: 600,
+            }}
           >
             app.clockify.me
           </Link>{" "}
           and log in to your account.
         </>
       ),
-      bgColor: "#e0b1cb",
-      borderColor: "#e0b1cb",
-      backgroundColor: "#e0b1cb20",
     },
     {
       number: 2,
       title: "Go to Preferences",
       description:
-        'Click on your profile picture or avatar in the top-right corner, then select "Preferences" from the dropdown menu.',
-      bgColor: "#231942",
-      borderColor: "#231942",
-      backgroundColor: "#23194220",
+        'Click your profile avatar in the top-right corner and choose "Preferences".',
     },
     {
       number: 3,
       title: "Navigate to Advanced Tab",
-      description:
-        'In the Preferences page, find and click on the "Advanced" tab at the top of the page.',
-      bgColor: "#e0b1cb",
-      borderColor: "#e0b1cb",
-      backgroundColor: "#e0b1cb20",
+      description: 'Inside Preferences, open the "Advanced" tab at the top.',
     },
     {
       number: 4,
       title: "Manage API Key",
       description:
-        'Scroll down to find the "Manage API Key" section. You\'ll see your API key displayed there.',
-      bgColor: "#231942",
-      borderColor: "#231942",
-      backgroundColor: "#23194220",
+        'Scroll down to the "Manage API Key" section to see your key.',
     },
     {
       number: 5,
       title: "Copy the API Key",
-      description:
-        'Click the "Copy" button next to your API key to copy it to your clipboard.',
-      bgColor: "#e0b1cb",
-      borderColor: "#e0b1cb",
-      backgroundColor: "#e0b1cb20",
+      description: 'Click the "Copy" button next to the API key.',
     },
     {
       number: 6,
       title: "Paste Below",
-      description:
-        'Paste your API key in the input field below and click "Save API Key" to store it securely.',
-      bgColor: "#231942",
-      borderColor: "#231942",
-      backgroundColor: "#23194220",
+      description: "Paste your key in the field below and click Save.",
     },
   ];
 
@@ -159,6 +140,7 @@ const ClockifyApiSetup: React.FC = () => {
     <Box
       sx={{
         minHeight: "100vh",
+        backgroundColor: theme.palette.background.default,
         py: 4,
         px: 2,
         display: "flex",
@@ -168,17 +150,21 @@ const ClockifyApiSetup: React.FC = () => {
     >
       <Container maxWidth="lg">
         <Paper
-          elevation={8}
+          elevation={0}
           sx={{
             borderRadius: 4,
-            overflow: "hidden",
+            backgroundColor: theme.palette.background.paper,
           }}
         >
           {/* Header */}
           <Box
             sx={{
-              background: "linear-gradient(135deg, #e0b1cb 0%, #231942 100%)",
-              color: "white",
+              background: `linear-gradient(
+                135deg,
+                ${theme.palette.primary.main} 0%,
+                ${theme.palette.secondary.main} 100%
+              )`,
+              color: theme.palette.primary.contrastText,
               py: 6,
               px: 4,
               textAlign: "center",
@@ -193,286 +179,194 @@ const ClockifyApiSetup: React.FC = () => {
             </Typography>
           </Box>
 
-          {/* Content */}
           <Box sx={{ p: 4 }}>
-            {/* Tutorial Section */}
-            <Box sx={{ mb: 6 }}>
-              <Typography
-                variant="h4"
-                fontWeight="bold"
-                gutterBottom
-                sx={{
-                  mb: 4,
-                  color: "#231942",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                }}
-              >
-                📚 How to Get Your API Key
-              </Typography>
+            {/* Tutorial */}
+            <Typography
+              variant="h4"
+              fontWeight="bold"
+              gutterBottom
+              sx={{ mb: 4, color: theme.palette.text.primary }}
+            >
+              📚 How to Get Your API Key
+            </Typography>
 
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                {steps.map((step) => (
-                  <Card
-                    key={step.number}
-                    sx={{
-                      backgroundColor: step.backgroundColor,
-                      borderLeft: `4px solid ${step.borderColor}`,
-                      boxShadow: "none",
-                    }}
-                  >
-                    <CardContent sx={{ display: "flex", gap: 2, p: 3 }}>
-                      <Box
-                        sx={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: "50%",
-                          backgroundColor: step.bgColor,
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontWeight: "bold",
-                          fontSize: 18,
-                          flexShrink: 0,
-                        }}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              {steps.map((step) => (
+                <Card
+                  key={step.number}
+                  sx={{
+                    backgroundColor: theme.palette.background.paper,
+                    borderLeft: `4px solid ${theme.palette.primary.main}`,
+                  }}
+                >
+                  <CardContent sx={{ display: "flex", gap: 2 }}>
+                    <Box
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: "50%",
+                        backgroundColor: theme.palette.primary.main,
+                        color: theme.palette.primary.contrastText,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {step.number}
+                    </Box>
+
+                    <Box>
+                      <Typography
+                        variant="h6"
+                        fontWeight="bold"
+                        sx={{ color: theme.palette.text.primary }}
                       >
-                        {step.number}
-                      </Box>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography
-                          variant="h6"
-                          fontWeight="bold"
-                          sx={{ mb: 1, color: "#231942" }}
-                        >
-                          {step.title}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ lineHeight: 1.6 }}
-                        >
-                          {step.description}
-                        </Typography>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                ))}
-              </Box>
+                        {step.title}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: theme.palette.text.secondary }}
+                      >
+                        {step.description}
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              ))}
             </Box>
 
             <Divider sx={{ my: 6 }} />
 
-            {/* API Key Input Section */}
-            <Box>
-              <Typography
-                variant="h4"
-                fontWeight="bold"
-                gutterBottom
-                sx={{
-                  mb: 4,
-                  color: "#231942",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                }}
+            {/* API Input */}
+            <Typography
+              variant="h4"
+              fontWeight="bold"
+              gutterBottom
+              sx={{ mb: 4, color: theme.palette.text.primary }}
+            >
+              🔑 Enter Your API Key
+            </Typography>
+
+            {message && (
+              <Alert
+                severity={message.type}
+                sx={{ mb: 3 }}
+                onClose={() => setMessage(null)}
               >
-                🔑 Enter Your API Key
-              </Typography>
+                {message.text}
+              </Alert>
+            )}
 
-              {/* Status Message */}
-              {message && (
-                <Alert
-                  severity={message.type}
-                  sx={{ mb: 3 }}
-                  onClose={() => setMessage(null)}
-                >
-                  {message.text}
-                </Alert>
-              )}
-
-              {/* Current Saved Key */}
-              {savedKey && (
-                <Card
-                  sx={{
-                    mb: 3,
-                    backgroundColor: "#e0b1cb20",
-                    borderLeft: "4px solid #e0b1cb",
-                    boxShadow: "none",
-                  }}
-                >
-                  <CardContent>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        mb: 2,
-                      }}
-                    >
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Current API Key:
-                      </Typography>
-                      <Chip
-                        icon={<CheckCircle />}
-                        label="Saved"
-                        size="small"
-                        sx={{
-                          backgroundColor: "#231942",
-                          color: "white",
-                          fontWeight: "bold",
-                        }}
-                      />
-                    </Box>
-                    <Box
-                      sx={{
-                        backgroundColor: "white",
-                        p: 2,
-                        borderRadius: 1,
-                        border: "1px solid #e0b1cb",
-                        mb: 1,
-                      }}
-                    >
-                      <Typography
-                        variant="body2"
-                        component="code"
-                        sx={{
-                          fontFamily: "monospace",
-                          wordBreak: "break-all",
-                          color: "#231942",
-                        }}
-                      >
-                        {showKey ? savedKey : maskApiKey(savedKey)}
-                      </Typography>
-                    </Box>
-                    <Button
-                      size="small"
-                      onClick={() => setShowKey(!showKey)}
-                      sx={{ color: "#231942", fontWeight: 600 }}
-                    >
-                      {showKey ? "👁️ Hide" : "👁️ Show"} Full Key
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Input Field */}
-              <TextField
-                fullWidth
-                label="Paste Your API Key Here"
-                variant="outlined"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Paste your Clockify API key..."
-                type={showKey ? "text" : "password"}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowKey(!showKey)}
-                        edge="end"
-                      >
-                        {showKey ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                  sx: { fontFamily: "monospace" },
-                }}
+            {savedKey && (
+              <Card
                 sx={{
                   mb: 3,
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "#e0b1cb",
-                      borderWidth: 2,
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "#e0b1cb",
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "#231942",
-                    },
-                  },
-                  "& .MuiInputLabel-root": {
-                    color: "#231942",
-                    fontWeight: 600,
-                  },
-                  "& .MuiInputLabel-root.Mui-focused": {
-                    color: "#231942",
-                  },
+                  backgroundColor: theme.palette.background.paper,
+                  borderLeft: `4px solid ${theme.palette.primary.main}`,
                 }}
-              />
+              >
+                <CardContent>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      mb: 2,
+                    }}
+                  >
+                    <Typography variant="subtitle2">
+                      Current API Key:
+                    </Typography>
+                    <Chip
+                      icon={<CheckCircle />}
+                      label="Saved"
+                      size="small"
+                      sx={{
+                        backgroundColor: theme.palette.primary.main,
+                        color: theme.palette.primary.contrastText,
+                      }}
+                    />
+                  </Box>
 
-              {/* Buttons */}
-              <Box sx={{ display: "flex", gap: 2, mb: 4 }}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  size="large"
-                  startIcon={<Save />}
-                  onClick={handleSave}
-                  sx={{
-                    background:
-                      "linear-gradient(135deg, #e0b1cb 0%, #231942 100%)",
-                    fontWeight: "bold",
-                    py: 1.5,
-                    textTransform: "none",
-                    fontSize: 16,
-                    "&:hover": {
-                      background:
-                        "linear-gradient(135deg, #d09bb8 0%, #1a1231 100%)",
-                      transform: "scale(1.02)",
-                    },
-                    transition: "all 0.3s",
-                  }}
-                >
-                  Save API Key
-                </Button>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  size="large"
-                  startIcon={<Delete />}
-                  onClick={handleClear}
-                  disabled={!savedKey}
-                  sx={{
-                    borderColor: "#e0b1cb",
-                    color: "#231942",
-                    fontWeight: "bold",
-                    py: 1.5,
-                    textTransform: "none",
-                    fontSize: 16,
-                    borderWidth: 2,
-                    "&:hover": {
-                      borderColor: "#231942",
-                      backgroundColor: "#f5f5f5",
-                      borderWidth: 2,
-                    },
-                  }}
-                >
-                  Clear Key
-                </Button>
-              </Box>
+                  <Typography
+                    component="code"
+                    sx={{
+                      fontFamily: "monospace",
+                      wordBreak: "break-all",
+                    }}
+                  >
+                    {showKey ? savedKey : maskApiKey(savedKey)}
+                  </Typography>
 
-              {/* Info Box */}
-              <Alert
-                severity="info"
-                icon={<span style={{ fontSize: 24 }}>ℹ️</span>}
+                  <Button
+                    size="small"
+                    onClick={() => setShowKey(!showKey)}
+                    sx={{ mt: 1 }}
+                  >
+                    {showKey ? "Hide" : "Show"} Full Key
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            <TextField
+              fullWidth
+              label="Paste Your API Key"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              type={showKey ? "text" : "password"}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowKey(!showKey)}>
+                      {showKey ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                mb: 3,
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: theme.palette.background.paper,
+                },
+              }}
+            />
+
+            <Box sx={{ display: "flex", gap: 2, mb: 4 }}>
+              <Button
+                fullWidth
+                variant="contained"
+                startIcon={<Save />}
+                onClick={handleSave}
                 sx={{
-                  backgroundColor: "#e0b1cb30",
-                  border: "1px solid #e0b1cb",
-                  "& .MuiAlert-message": {
-                    color: "#231942",
+                  backgroundColor: theme.palette.primary.main,
+                  color: theme.palette.primary.contrastText,
+                  "&:hover": {
+                    backgroundColor: theme.palette.primary.dark,
                   },
                 }}
               >
-                <Typography variant="body2">
-                  <strong>Note:</strong> Your API key will be stored securely in
-                  your browser cookies and will remain saved for 365 days. The
-                  key is only accessible from this browser.
-                </Typography>
-              </Alert>
+                Save API Key
+              </Button>
+
+              <Button
+                fullWidth
+                variant="outlined"
+                startIcon={<Delete />}
+                onClick={handleClear}
+                disabled={!savedKey}
+                sx={{
+                  borderColor: theme.palette.primary.main,
+                  color: theme.palette.primary.main,
+                }}
+              >
+                Clear Key
+              </Button>
             </Box>
+
+            <Alert severity="info">
+              Your API key is stored in browser cookies for 365 days.
+            </Alert>
           </Box>
         </Paper>
       </Container>
