@@ -1,65 +1,80 @@
-import { Box, Button, Typography, IconButton, Tooltip } from "@mui/material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import { clearApiKey, getApiKey } from "~/utils/auth";
+
+import { Button } from "~/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
+import { Copy, Check, LogOut } from "lucide-react";
 
 export default function DashboardSettings() {
   const navigate = useNavigate();
   const apiKey = getApiKey();
+  const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
     if (!apiKey) return;
     await navigator.clipboard.writeText(apiKey);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <Box>
-      <Typography variant="h6" fontWeight={600}>
-        API Key
-      </Typography>
+    <div className="space-y-4">
+      <h2 className="text-base font-semibold text-white">API Key</h2>
 
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          my: 2,
-          p: 1.5,
-          borderRadius: 2,
-          borderWidth: 1,
-          borderStyle: "solid",
-          borderColor: "primary.main",
-        }}
+      {/* API key display */}
+      <div
+        className="flex items-center gap-2 rounded-xl border border-indigo-500/50
+                   bg-white/5 px-4 py-3"
       >
-        <Typography
-          variant="body1"
-          sx={{
-            fontFamily: "monospace",
-            flexGrow: 1,
-          }}
-        >
+        <span className="flex-1 font-mono text-sm text-white/80">
           {apiKey ? `${apiKey.slice(0, 6)}••••••••` : "No API Key"}
-        </Typography>
+        </span>
 
         {apiKey && (
-          <Tooltip title="Copy API Key">
-            <IconButton size="small" onClick={handleCopy}>
-              <ContentCopyIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={handleCopy}
+                  className="flex h-7 w-7 items-center justify-center rounded-lg
+                             text-white/50 hover:bg-white/10 hover:text-white
+                             transition-colors"
+                  aria-label="Copy API key"
+                >
+                  {copied ? (
+                    <Check className="h-4 w-4 text-green-400" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {copied ? "Copied!" : "Copy API Key"}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
-      </Box>
+      </div>
 
+      {/* Logout */}
       <Button
-        color="error"
-        variant="outlined"
+        variant="outline"
         onClick={() => {
           clearApiKey();
           navigate("/");
         }}
+        className="border-red-500/50 text-red-400 hover:bg-red-500/10
+                   hover:text-red-300 hover:border-red-400 rounded-xl"
       >
+        <LogOut className="h-4 w-4 mr-2" />
         Clear API Key & Logout
       </Button>
-    </Box>
+    </div>
   );
 }

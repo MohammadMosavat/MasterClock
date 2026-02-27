@@ -1,15 +1,10 @@
-import { Link as RouterLink } from "react-router";
-import { useClockifyWorkspaces } from "~/hooks/useClockifyWorkspaces";
-import {
-  Container,
-  Typography,
-  Stack,
-  Card,
-  CardContent,
-  Button,
-  CircularProgress,
-} from "@mui/material";
 import { useEffect } from "react";
+import { Link } from "react-router";
+import { useClockifyWorkspaces } from "~/hooks/useClockifyWorkspaces";
+
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
+import { Loader2, LayoutGrid } from "lucide-react";
 
 export default function WorkspacePage() {
   const { workspaces, loading, error, fetchWorkspaces } =
@@ -21,65 +16,52 @@ export default function WorkspacePage() {
 
   if (loading)
     return (
-      <Stack alignItems="center" mt={6}>
-        <CircularProgress />
-      </Stack>
+      <div className="flex justify-center mt-28">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
+      </div>
     );
 
   if (error)
-    return (
-      <Typography color="error" mt={4} align="center">
-        Error: {error}
-      </Typography>
-    );
+    return <p className="mt-8 text-center text-red-400">Error: {error}</p>;
 
   if (workspaces.length === 0)
     return (
-      <Typography mt={4} align="center">
-        No workspaces found.
-      </Typography>
+      <p className="mt-8 text-center text-white/60">No workspaces found.</p>
     );
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <Typography
-        variant="h4"
-        color="text.primary"
-        fontWeight={600}
-        gutterBottom
-      >
-        Clockify Workspaces
-      </Typography>
+    <main className="mx-auto max-w-4xl px-4 pt-28 pb-12">
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-6">
+        <LayoutGrid className="h-6 w-6 text-indigo-400" />
+        <h1 className="text-2xl font-semibold text-white">
+          Clockify Workspaces
+        </h1>
+      </div>
 
-      <Stack display={"flex"} spacing={2}>
+      {/* Workspace list */}
+      <div className="flex flex-col gap-3">
         {workspaces.map((ws) => (
-          <Card key={ws.id} variant="elevation">
-            <CardContent
-              sx={{
-                padding: "16px !important",
-              }}
-            >
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                padding={0}
+          <Card
+            key={ws.id}
+            className="border border-white/10 bg-white/5 backdrop-blur
+                       hover:border-indigo-500/50 transition-colors"
+          >
+            <CardContent className="flex items-center justify-between px-5 py-4">
+              <span className="text-base font-medium text-white">
+                {ws.name}
+              </span>
+              <Button
+                asChild
+                size="sm"
+                className="rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white"
               >
-                <Typography variant="h6">{ws.name}</Typography>
-                <Button
-                  component={RouterLink}
-                  to={`/workspace/${ws.id}`}
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                >
-                  View
-                </Button>
-              </Stack>
+                <Link to={`/workspace/${ws.id}`}>View</Link>
+              </Button>
             </CardContent>
           </Card>
         ))}
-      </Stack>
-    </Container>
+      </div>
+    </main>
   );
 }

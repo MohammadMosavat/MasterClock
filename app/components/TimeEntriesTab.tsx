@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import type { ClockifyTimeEntry } from "~/types";
-import { Card, CardContent, Typography, Stack, Divider } from "@mui/material";
+import { Card, CardContent } from "~/components/ui/card";
+import { Separator } from "~/components/ui/separator";
+import { Loader2 } from "lucide-react";
 import formatDuration from "~/utils/formatDuration";
 import { useClockifyProjects } from "~/hooks/useClockifyProjects";
 
@@ -28,76 +30,42 @@ const TimeEntriesTab = ({ entries, workspaceId }: TimeEntriesTabProps) => {
 
   const entryDate = new Date(entries.timeInterval.start).toLocaleDateString(
     undefined,
-    {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }
+    { year: "numeric", month: "short", day: "numeric" },
   );
 
   return (
     <Card
-      variant="outlined"
-      sx={{
-        width: "100%",
-        mb: 3,
-        borderRadius: 2,
-        boxShadow: 2,
-        transition: "0.2s",
-        "&:hover": {
-          boxShadow: 4,
-          transform: "translateY(-2px)",
-        },
-      }}
+      className="w-full border border-white/10 bg-white/5 backdrop-blur
+                 transition-all duration-200 hover:-translate-y-0.5
+                 hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/10"
     >
-      <CardContent>
-        <Stack spacing={2}>
-          {/* HEADER: TITLE + DATE */}
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            justifyContent="space-between"
-            alignItems={{ xs: "flex-start", sm: "center" }}
-            spacing={1}
-          >
-            <Typography variant="h6" fontWeight={600}>
-              {entries.description || "No description"}
-            </Typography>
+      <CardContent className="px-5 py-4 space-y-3">
+        {/* Header: description + date */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+          <h3 className="text-base font-semibold text-white">
+            {entries.description || "No description"}
+          </h3>
+          <span className="text-xs text-white/50 shrink-0">{entryDate}</span>
+        </div>
 
-            <Typography variant="body2" color="text.secondary">
-              {entryDate}
-            </Typography>
-          </Stack>
+        <Separator className="bg-white/10" />
 
-          <Divider />
-
-          {/* TIME DETAILS */}
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={{ xs: 1, sm: 3 }}
-            flexWrap="wrap"
-          >
-            <TimeEntriesItems
-              title="Start"
-              value={new Date(entries.timeInterval.start).toLocaleString()}
-              loading={false}
-            />
-            <TimeEntriesItems
-              title="End"
-              value={new Date(entries.timeInterval.end).toLocaleString()}
-              loading={false}
-            />
-            <TimeEntriesItems
-              title="Duration"
-              value={formatDuration(entries.timeInterval.duration)}
-              loading={false}
-            />
-            <TimeEntriesItems
-              title="Project"
-              value={loading ? "Loading..." : projectName}
-              loading={false}
-            />
-          </Stack>
-        </Stack>
+        {/* Time details */}
+        <div className="flex flex-wrap gap-x-6 gap-y-2">
+          <EntryItem
+            title="Start"
+            value={new Date(entries.timeInterval.start).toLocaleString()}
+          />
+          <EntryItem
+            title="End"
+            value={new Date(entries.timeInterval.end).toLocaleString()}
+          />
+          <EntryItem
+            title="Duration"
+            value={formatDuration(entries.timeInterval.duration)}
+          />
+          <EntryItem title="Project" value={projectName} loading={loading} />
+        </div>
       </CardContent>
     </Card>
   );
@@ -105,27 +73,22 @@ const TimeEntriesTab = ({ entries, workspaceId }: TimeEntriesTabProps) => {
 
 export default TimeEntriesTab;
 
-const TimeEntriesItems = ({
+// ── Sub-component ────────────────────────────────────────────────────────────
+const EntryItem = ({
   title,
   value,
-  loading,
+  loading = false,
 }: {
   title: string;
   value: string;
-  loading: boolean;
-}) => {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      display={"flex"}
-      alignItems={"center"}
-      gap={1}
-    >
-      <Typography variant="body1" fontWeight={500}>
-        {title}:
-      </Typography>
-      {loading ? "Loading..." : value}
-    </Typography>
-  );
-};
+  loading?: boolean;
+}) => (
+  <div className="flex items-center gap-1.5 text-sm">
+    <span className="font-medium text-white/80">{title}:</span>
+    {loading ? (
+      <Loader2 className="h-3.5 w-3.5 animate-spin text-indigo-400" />
+    ) : (
+      <span className="text-white/50">{value}</span>
+    )}
+  </div>
+);

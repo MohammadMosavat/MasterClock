@@ -3,19 +3,12 @@ import { useParams, useSearchParams } from "react-router";
 import { useClockifyTimeEntries } from "~/hooks/useWorkspaceTimeEntries";
 import type { ClockifyTimeEntry } from "~/types";
 import TimeEntriesTab from "./TimeEntriesTab";
-import {
-  Box,
-  CircularProgress,
-  Typography,
-  List,
-  ListItem,
-  TextField,
-  Stack,
-  Button,
-  Paper,
-  Fab,
-} from "@mui/material";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Card, CardContent } from "~/components/ui/card";
+import { Loader2, ChevronUp, Clock } from "lucide-react";
 
 interface TimeEntriesListProps {
   userId?: string;
@@ -46,7 +39,6 @@ const TimeEntriesList = ({ userId }: TimeEntriesListProps) => {
     useClockifyTimeEntries();
 
   const [searchParams, setSearchParams] = useSearchParams();
-
   const startDate = searchParams.get("start") || "";
   const endDate = searchParams.get("end") || "";
 
@@ -68,9 +60,9 @@ const TimeEntriesList = ({ userId }: TimeEntriesListProps) => {
     () =>
       timeEntries.reduce(
         (sum, e) => sum + parseDurationToSeconds(e.timeInterval.duration),
-        0
+        0,
       ),
-    [timeEntries]
+    [timeEntries],
   );
 
   const applyFilters = () => {
@@ -86,92 +78,98 @@ const TimeEntriesList = ({ userId }: TimeEntriesListProps) => {
     setSearchParams({});
   };
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   if (loading)
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-        <CircularProgress />
-      </Box>
+      <div className="flex justify-center py-8">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
+      </div>
     );
 
-  if (error)
-    return (
-      <Typography color="error" sx={{ py: 2 }}>
-        Error: {error}
-      </Typography>
-    );
+  if (error) return <p className="py-2 text-red-400">Error: {error}</p>;
 
   return (
     <>
-      <Paper elevation={2} sx={{ p: 2, mb: 3, borderRadius: 2 }}>
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-          <TextField
-            label="Start date"
-            type="date"
-            value={startInput}
-            onChange={(e) => setStartInput(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            size="small"
-            fullWidth
-          />
-          <TextField
-            label="End date"
-            type="date"
-            value={endInput}
-            onChange={(e) => setEndInput(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            size="small"
-            fullWidth
-          />
-          <Button variant="contained" onClick={applyFilters}>
-            Apply
-          </Button>
-          {hasActiveFilters && (
-            <Button variant="outlined" onClick={clearFilters}>
-              Clear
-            </Button>
-          )}
-        </Stack>
-      </Paper>
+      {/* ── Filters ───────────────────────────────────────────────────── */}
+      <Card className="border border-white/10 bg-white/5 backdrop-blur mb-4">
+        <CardContent className="px-5 py-4">
+          <div className="flex flex-col sm:flex-row gap-3 items-end">
+            <div className="flex-1 space-y-1">
+              <Label className="text-white/60 text-xs">Start date</Label>
+              <Input
+                type="date"
+                value={startInput}
+                onChange={(e) => setStartInput(e.target.value)}
+                className="bg-white/5 border-white/10 text-white
+                           [color-scheme:dark] focus:ring-indigo-500"
+              />
+            </div>
+            <div className="flex-1 space-y-1">
+              <Label className="text-white/60 text-xs">End date</Label>
+              <Input
+                type="date"
+                value={endInput}
+                onChange={(e) => setEndInput(e.target.value)}
+                className="bg-white/5 border-white/10 text-white
+                           [color-scheme:dark] focus:ring-indigo-500"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={applyFilters}
+                className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg"
+              >
+                Apply
+              </Button>
+              {hasActiveFilters && (
+                <Button
+                  onClick={clearFilters}
+                  variant="outline"
+                  className="border-white/20 text-white/80 hover:bg-white/10 rounded-lg"
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-      <Paper
-        elevation={1}
-        sx={{
-          p: 2,
-          mb: 2,
-          borderRadius: 2,
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <Typography fontWeight={600}>Total Time</Typography>
-        <Typography color="primary" fontWeight={600}>
-          {formatSeconds(totalSeconds)}
-        </Typography>
-      </Paper>
+      {/* ── Total time ────────────────────────────────────────────────── */}
+      <Card className="border border-white/10 bg-white/5 backdrop-blur mb-4">
+        <CardContent className="flex items-center justify-between px-5 py-4">
+          <div className="flex items-center gap-2 font-semibold text-white">
+            <Clock className="h-4 w-4 text-indigo-400" />
+            Total Time
+          </div>
+          <span className="font-semibold text-indigo-400 tabular-nums">
+            {formatSeconds(totalSeconds)}
+          </span>
+        </CardContent>
+      </Card>
 
+      {/* ── Entries list ──────────────────────────────────────────────── */}
       {timeEntries.length === 0 ? (
-        <Typography>No time entries found.</Typography>
+        <p className="text-white/50 text-center py-6">No time entries found.</p>
       ) : (
-        <List sx={{ p: 0 }}>
+        <ul className="flex flex-col gap-2">
           {timeEntries.map((entry: ClockifyTimeEntry) => (
-            <ListItem key={entry.id} sx={{ mb: 1, p: 0 }}>
+            <li key={entry.id}>
               <TimeEntriesTab entries={entry} workspaceId={workspaceId!} />
-            </ListItem>
+            </li>
           ))}
-        </List>
+        </ul>
       )}
 
-      <Fab
-        color="primary"
-        onClick={scrollToTop}
-        sx={{ position: "fixed", bottom: 24, right: 24 }}
+      {/* ── Scroll to top FAB ─────────────────────────────────────────── */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className="fixed bottom-6 right-6 z-50 flex h-11 w-11 items-center
+                   justify-center rounded-full bg-indigo-600 text-white shadow-lg
+                   hover:bg-indigo-500 transition-colors"
+        aria-label="Scroll to top"
       >
-        <KeyboardArrowUpIcon />
-      </Fab>
+        <ChevronUp className="h-5 w-5" />
+      </button>
     </>
   );
 };
